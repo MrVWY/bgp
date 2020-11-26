@@ -6,9 +6,9 @@ import (
 )
 
 //Policy
-func newAddPolicyRequest(policyName, StatementsName, PrefixSetName string) *gobgpapi.AddPolicyRequest {
+func newAddPolicyRequest(policyName, StatementsName, PrefixSetName, NeighborSetName string) *gobgpapi.AddPolicyRequest {
 	return &gobgpapi.AddPolicyRequest{
-		Policy: newPolicy(policyName, StatementsName, PrefixSetName),
+		Policy: newPolicy(policyName, StatementsName, PrefixSetName, NeighborSetName),
 		ReferExistingStatements: false,
 	}
 }
@@ -21,10 +21,10 @@ func newDelPolicyRequest(policy *gobgpapi.Policy) *gobgpapi.DeletePolicyRequest 
 	}
 }
 
-func newPolicy(policyName, StatementsName, PrefixSetName string) *gobgpapi.Policy {
+func newPolicy(policyName, StatementsName, PrefixSetName, NeighborSetName string) *gobgpapi.Policy {
 	return &gobgpapi.Policy{
 		Name : policyName,
-		Statements: []*gobgpapi.Statement{ newStatements(StatementsName, PrefixSetName) },
+		Statements: []*gobgpapi.Statement{ newStatements(StatementsName, PrefixSetName, NeighborSetName) },
 	}
 }
 
@@ -72,31 +72,15 @@ func newPrefixSet(ipPrefix, MaskMin, MaskMax string) []*gobgpapi.Prefix {
 }
 
 //Statements
-func newStatements(StatementsName ,PrefixSetName string) *gobgpapi.Statement {
+func newStatements(StatementsName ,PrefixSetName, NeighborSetName string) *gobgpapi.Statement {
 	return &gobgpapi.Statement{
 		Name: StatementsName,
 		Conditions: &gobgpapi.Conditions{
 			PrefixSet: &gobgpapi.MatchSet{MatchType: gobgpapi.MatchType_ANY, Name: PrefixSetName},
-			NeighborSet:       nil,
-			AsPathLength:      nil,
-			AsPathSet:         nil,
-			CommunitySet:      nil,
-			ExtCommunitySet:   nil,
-			RpkiResult:        0,
-			RouteType:         0,
-			LargeCommunitySet: nil,
-			NextHopInList:     nil,
-			AfiSafiIn:         nil,
+			NeighborSet:       &gobgpapi.MatchSet{MatchType: gobgpapi.MatchType_ANY, Name: NeighborSetName},
 		},
 		Actions: &gobgpapi.Actions{
 			RouteAction: gobgpapi.RouteAction_REJECT,
-			Community:      nil,
-			Med:            nil,
-			AsPrepend:      nil,
-			ExtCommunity:   nil,
-			Nexthop:        nil,
-			LocalPref:      nil,
-			LargeCommunity: nil,
 		},
 	}
 }
@@ -108,63 +92,58 @@ func newDelStatements(Statements *gobgpapi.Statement) *gobgpapi.DeleteStatementR
 	}
 }
 
-func newAddStatementRequest(StatementsName, PrefixSetName string) *gobgpapi.AddStatementRequest{
+func newAddStatementRequest(StatementsName, PrefixSetName, NeighborSetName string) *gobgpapi.AddStatementRequest{
 	return &gobgpapi.AddStatementRequest{
-		Statement: newStatements(StatementsName, PrefixSetName),
-	}
-}
-
-//MatchSet
-func newMatchSet(Type, MatchName string) *gobgpapi.MatchSet {
-	var MatchTypes gobgpapi.MatchType
-	switch Type {
-	case "ANY": MatchTypes = gobgpapi.MatchType_ANY
-	case "ALL": MatchTypes = gobgpapi.MatchType_ALL
-	case "INVERT": MatchTypes = gobgpapi.MatchType_INVERT
-	}
-	return &gobgpapi.MatchSet{
-		MatchType: MatchTypes,
-		Name: MatchName,
+		Statement: newStatements(StatementsName, PrefixSetName, NeighborSetName),
 	}
 }
 
 //Global
-func newGlobal(As int, RouterID string, ListenPort int, ListenAddresses []string) *gobgpapi.Global {
+func newGlobal(As int, RouterID string, ListenPort int, ListenAddresses []string, UseMultiplePaths bool) *gobgpapi.Global {
 	return &gobgpapi.Global{
 		As: 				uint32(As),
 		RouterId: 			RouterID,
 		ListenPort: 		int32(ListenPort),
 		ListenAddresses: 	ListenAddresses,
-		Families:              nil,
-		UseMultiplePaths:      false,
-		RouteSelectionOptions: nil,
-		DefaultRouteDistance:  nil,
-		Confederation:         nil,
-		GracefulRestart:       nil,
-		ApplyPolicy:           nil,
+		UseMultiplePaths:      UseMultiplePaths,
 	}
 }
 
 //Peer
-func newPeer() *gobgpapi.Peer {
+func newAddPeerRequest(Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity int) *gobgpapi.AddPeerRequest {
+	return &gobgpapi.AddPeerRequest{ Peer: newPeer(Description, NeighborAddress, LocalAs, PeerAs, SendCommunity) }
+}
+
+func newPeer(Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity int) *gobgpapi.Peer {
 	return &gobgpapi.Peer{
-		Conf: newPeerConf(),
-		Transport: &gobgpapi.Transport{
-			LocalAddress:  "",
-			LocalPort:     0,
-			MtuDiscovery:  false,
-			PassiveMode:   false,
-			RemoteAddress: "",
-			RemotePort:    0,
-			TcpMss:        0,
-		},
+		Conf:            newPeerConf(Description, NeighborAddress, LocalAs, PeerAs, SendCommunity),
+		EbgpMultihop:    &gobgpapi.EbgpMultihop{ Enabled: false,  MultihopTtl: 0 },
+		//State:           nil,
+		//Timers:          nil,
+		Transport:       nil, //loopback
 	}
 }
 
-func newPeerConf() *gobgpapi.PeerConf {
+//prepare to Loopback
+func newTransport() *gobgpapi.Transport {
+	return &gobgpapi.Transport{
+		LocalAddress:  "",
+		LocalPort:     0,
+		MtuDiscovery:  false,
+		PassiveMode:   false,
+		RemoteAddress: "",
+		RemotePort:    0,
+		TcpMss:        0,
+	}
+}
+
+func newPeerConf(Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity int) *gobgpapi.PeerConf {
 	return &gobgpapi.PeerConf{
-		Description: "",
-		NeighborAddress: "123",
-		PeerAs: 12,
+		Description:       Description,
+		LocalAs:           uint32(LocalAs),
+		NeighborAddress:   NeighborAddress,
+		PeerAs:            uint32(PeerAs),
+		SendCommunity:     uint32(SendCommunity),
+		//NeighborInterface: "",
 	}
 }

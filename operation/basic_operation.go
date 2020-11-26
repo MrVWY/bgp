@@ -7,13 +7,12 @@ import (
 	"log"
 )
 
-func StartBGP(ctx context.Context, As int, RouterID string, ListenPort int, ListenAddresses []string ) {
-	StartBgpRequest := newGlobal(As, RouterID, ListenPort, ListenAddresses)
+func StartBGP(ctx context.Context, As int, RouterID string, ListenPort int, ListenAddresses []string, UseMultiplePaths bool ) {
+	StartBgpRequest := newGlobal(As, RouterID, ListenPort, ListenAddresses, UseMultiplePaths)
 	_, err := Client.StartBgp(ctx, &gobgpapi.StartBgpRequest{Global: StartBgpRequest})
 	if err != nil {
 		log.Fatalf("Start BGP is fail , err is %s", err)
 	}
-
 }
 
 func StopBGP(ctx context.Context) {

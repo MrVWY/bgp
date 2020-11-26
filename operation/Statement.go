@@ -3,64 +3,64 @@ package operation
 import (
 	"context"
 	"errors"
+	"fmt"
 	gobgpapi "github.com/osrg/gobgp/api"
-	"log"
 )
 
-func AddStatementsToPolicy(ctx context.Context, PolicyName, StatementsName string) (bool, error) {
+func AddStatementsToPolicy(ctx context.Context, PolicyName, StatementsName string) (string, error) {
 	policy, err := ListPolicies(ctx, PolicyName)
 	if err != nil {
-		return false, err
+		return "false", fmt.Errorf("ListPolicies is happend a err, err is %s", err)
 	}
 	Statement, err := ListStatements(ctx, StatementsName)
 	if err != nil {
-		return false, err
+		return "false", fmt.Errorf("ListStatements is happend a err, err is %s", err)
 	}
 	policy.Statements = append(policy.Statements, Statement)
-	return true, nil
+	return "Successful", nil
 }
 
-func AddStatements(ctx context.Context, StatementsName, PrefixSetName string) (string, error) {
+func AddStatements(ctx context.Context, StatementsName, PrefixSetName, NeighborSetName string) (string, error) {
 	var err error
 	has, err := ListStatements(ctx, StatementsName)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("ListStatements is happend a err, err is %s", err)
 	}
 	if has == nil {
 		return "", errors.New("The Statement is exist ")
 	}
-	response, err := Client.AddStatement(ctx, newAddStatementRequest(StatementsName, PrefixSetName))
+	_, err = Client.AddStatement(ctx, newAddStatementRequest(StatementsName, PrefixSetName, NeighborSetName))
 	if err != nil {
-		log.Fatalf("DeleteStatements happen a err, err is %s", err)
+		return "false", fmt.Errorf("DeleteStatements happen a err, err is %s", err)
 	}
-	return response.String(), nil
+	return "Successful", nil
 }
 
 func DeleteStatements(ctx context.Context, StatementsName string) (string, error) {
 	var err error
 	Statements, err := ListStatements(ctx, StatementsName)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("ListStatements is happend a err, err is %s", err)
 	}
 	if Statements == nil {
 		return "", errors.New("There is not exist statement ")
 	}
 	Del := newDelStatements(Statements)
-	response, err := Client.DeleteStatement(ctx, Del)
+	_, err = Client.DeleteStatement(ctx, Del)
 	if err != nil {
-		log.Fatalf("DeleteStatements happen a err, err is %s", err)
+		return "false", fmt.Errorf("DeleteStatements happen a err, err is %s", err)
 	}
-	return response.String(), nil
+	return "Successful", nil
 }
 
 func ListStatements(ctx context.Context, StatementsName string) (*gobgpapi.Statement, error) {
 	ListStatementClient, err := Client.ListStatement(ctx, &gobgpapi.ListStatementRequest{Name: StatementsName})
 	if err != nil {
-		log.Fatalf("ListStatements happen a err, err is %s", err)
+		return nil, fmt.Errorf("ListStatements happen a err, err is %s", err)
 	}
 	StatementResponse, err := ListStatementClient.Recv()
 	if err != nil {
-		log.Fatalf("ListStatements happen a err, err is %s", err)
+		return nil, fmt.Errorf("ListStatements happen a err, err is %s", err)
 	}
 	if StatementResponse == nil {
 		return nil, errors.New("There is no Statement ")
