@@ -4,10 +4,8 @@
     <list default="true" id="d4e1a230-3a65-4258-a376-b15dfdf5bd3a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/handle/interfaces.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/operation/Builder.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Builder.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/operation/Policy.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Policy.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server.go" beforeDir="false" afterPath="$PROJECT_DIR$/Server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handle/init.go" beforeDir="false" afterPath="$PROJECT_DIR$/handle/init.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -53,7 +51,16 @@
       <recent name="E:\bgp\handle" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Go Build.go build Server.go">
+    <configuration name="go build Server.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="bgp" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <filePath value="$PROJECT_DIR$/Server.go" />
+      <package value="bgp" />
+      <directory value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build bgp/logger" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="bgp" />
       <working_directory value="$PROJECT_DIR$" />
@@ -65,6 +72,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Build.go build Server.go" />
         <item itemvalue="Go Build.go build bgp/logger" />
       </list>
     </recent_temporary>
