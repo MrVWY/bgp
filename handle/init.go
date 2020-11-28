@@ -7,8 +7,8 @@ import (
 	"log"
 )
 
-func Init() {
-	conn, err := grpc.Dial("", grpc.WithInsecure())
+func Init(address string) {
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
