@@ -36,13 +36,31 @@ func AddPolicies(ctx context.Context, PolicyName, StatementsName, PrefixSetName,
 	if pas != nil {
 		return "false", errors.New("The policy is exist ")
 	}
-	has, err := ListStatements(ctx, StatementsName)
+
+	Has, err := ListStatements(ctx, StatementsName)
 	if err != nil {
 		return "false", fmt.Errorf("ListStatements is happend a err, err is %s", err)
 	}
-	if has != nil {
-		return "false", errors.New("The statement is exist ")
+	if Has == nil {
+		return "false", errors.New("The statement is not exist ")
 	}
+
+	has, err := ListDefinedSets(ctx, PrefixSetName)
+	if err != nil {
+		return "false", fmt.Errorf("ListDefinedSets is happend a err, err is %s", err)
+	}
+	if has == nil {
+		return "false", errors.New("The PrefixSet is not exist ")
+	}
+
+	have, err := ListPeers(ctx, NeighborSetName)
+	if err != nil {
+		return "false", fmt.Errorf("ListPeers is happend a err, err is %s", err)
+	}
+	if have == nil {
+		return "false", errors.New("The NeighborSet is not exist ")
+	}
+
 	newPolicy := newAddPolicyRequest(PolicyName, StatementsName, PrefixSetName, NeighborSetName)
 	_, err = Client.AddPolicy(ctx, newPolicy)
 	if err != nil {

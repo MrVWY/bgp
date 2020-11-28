@@ -120,7 +120,7 @@ func newPeer(Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity
 		EbgpMultihop:    &gobgpapi.EbgpMultihop{ Enabled: false,  MultihopTtl: 0 },
 		//State:           nil,
 		//Timers:          nil,
-		Transport:       nil, //loopback
+		//Transport:       nil, //loopback
 	}
 }
 

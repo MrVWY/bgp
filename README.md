@@ -1,7 +1,7 @@
 ### BGP Route Policy Structure
 [policy-component.png](https://github.com/osrg/gobgp/blob/master/docs/sources/policy-component.png)
 
-### 接口  (22个)
+### 接口  (22个) 后期只限post
 + basic class
     + StartBGP()  
     
@@ -20,9 +20,17 @@
         }  
     
     + DeletePolicy()
-    
+        + json parameter:  
+        {  
+          PolicyName: 策略名  
+        }  
+        
     + ListPolicy()
-    
+        + json parameter:  
+        {  
+          PolicyName: 策略名  
+        }  
+        
     + AddStatementToPolicy()  
         + json parameter:  
         {  
@@ -51,10 +59,6 @@
             MaskMin: 最小掩码长度  
             MaskMax: 最大掩码长度  
         }  
-        
-        + DeletePeer()
-        
-        + ListPeer()
         
 + Statement class  
     + CreateStatement()  
