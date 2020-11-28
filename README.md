@@ -10,7 +10,7 @@
     + GetBgp()
     
 + Policy class
-    + CreatePolicy()  
+    + CreatePolicy() ✔
         + json parameter:  
         {  
            PolicyName: 策略名  
@@ -19,7 +19,7 @@
            NeighborSetName: 对等体  
         }  
     
-    + DeletePolicy()
+    + DeletePolicy() ✔
         + json parameter:  
         {  
           PolicyName: 策略名  
@@ -31,7 +31,7 @@
           PolicyName: 策略名  
         }  
         
-    + AddStatementToPolicy()  
+    + AddStatementToPolicy() ✔  
         + json parameter:  
         {  
            PolicyName: 策略名  
@@ -50,24 +50,28 @@
     + MonitorPeer()
     
 + Defined class
-    + CreatePrefixSet()  
+    + CreatePrefixSet() ✔  
         + json parameter:  
         {  
             Type: 策略内容  
-            SetName: 名称  
+            PrefixSetName: 名称  
             ipPrefix: 路由前缀  
             MaskMin: 最小掩码长度  
             MaskMax: 最大掩码长度  
         }  
-        
+    + DeletePrefixSet() ✔  
+        + json parameter:  
+        {  
+            PrefixSetName: 名称  
+        }  
 + Statement class  
-    + CreateStatement()  
+    + CreateStatement() ✔  
         + json parameter:  
         {  
             StatementsName: 策略内容  
             PrefixSetName: 路由前缀  
             NeighborSetName: 对等体  
         }  
-    + DeleteStatement()
+    + DeleteStatement() ✔
     
     + ListStatement()
