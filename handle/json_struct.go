@@ -13,7 +13,7 @@ type message struct {
 }
 
 type createPolicy struct {
-	PolicyName, StatementsName, PrefixSetName, NeighborSetName, action string
+	PolicyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, ExtCommunitySetName, action string
 }
 
 type deletePolicy struct {
@@ -29,7 +29,7 @@ type addStatementToPolicy struct {
 }
 
 type createStatement struct {
-	StatementsName, PrefixSetName, NeighborSetName string
+	StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, ExtCommunitySetName, action string
 }
 
 type deleteStatement struct {

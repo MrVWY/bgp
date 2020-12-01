@@ -24,7 +24,7 @@ func CreateStatement(w http.ResponseWriter, r *http.Request) {
 		//日志
 	}
 
-	reply, err := operation.AddStatements(context.Background(), c.StatementsName, c.PrefixSetName, c.NeighborSetName)
+	reply, err := operation.AddStatements(context.Background(), c.StatementsName, c.PrefixSetName, c.NeighborSetName, c.CommunitySetName, c.ExtCommunitySetName, c.action)
 	if err != nil {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())

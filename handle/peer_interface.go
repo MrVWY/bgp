@@ -1,7 +1,6 @@
 package handle
 
 import (
-	"bgp/operation"
 	"net/http"
 )
 
@@ -16,7 +15,7 @@ func CreatePeer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity int
-	_, _ = operation.AddPeers()
+
 }
 
 
