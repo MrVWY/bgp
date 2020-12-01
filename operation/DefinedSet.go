@@ -8,9 +8,9 @@ import (
 	"strconv"
 )
 
-func AddDefinedSets(ctx context.Context,Type, DFSetName, ipPrefix, MaskMin, MaskMax string) (string, error) {
+func AddDefinedSetPrefixSet(ctx context.Context,Type, PrefixSetName, ipPrefix, MaskMin, MaskMax string) (string, error) {
 	var err error
-	Defined, err := ListDefinedSets(ctx, DFSetName)
+	Defined, err := ListDefinedSets(ctx, PrefixSetName)
 	if err != nil {
 		return "false", fmt.Errorf("ListDefinedSets happen a err, err is %s", err)
 	}
@@ -21,7 +21,58 @@ func AddDefinedSets(ctx context.Context,Type, DFSetName, ipPrefix, MaskMin, Mask
 		return "Successful", nil
 	}
 	Prefix := newPrefixSet(ipPrefix, MaskMin, MaskMax)
-	res := newAddDefinedSet(Type, DFSetName, Prefix)
+	res := newAddDefinedSet(Type, PrefixSetName, Prefix, nil)
+	_, err = Client.AddDefinedSet(ctx, res)
+	if err != nil {
+		return "false", fmt.Errorf("AddDefinedSet happen a err, err is %s", err)
+	}
+	return "Successful", nil
+}
+
+func AddDefinedSetCommunitySet(ctx context.Context, CommunitySetName, Type string, list []string) (string, error) {
+	var err error
+	Defined, err := ListDefinedSets(ctx, CommunitySetName)
+	if err != nil {
+		return "false", fmt.Errorf("ListDefinedSets happen a err, err is %s", err)
+	}
+	if Defined != nil {
+		return "false", fmt.Errorf("ListDefinedSets happen a err, err is %s", err)
+	}
+	res := newAddDefinedSet(Type, CommunitySetName, nil, list)
+	_, err = Client.AddDefinedSet(ctx, res)
+	if err != nil {
+		return "false", fmt.Errorf("AddDefinedSet happen a err, err is %s", err)
+	}
+	return "Successful", nil
+}
+
+func AddDefinedSetNeighborSet(ctx context.Context, NeighborSetName, Type string, list []string) (string, error) {
+	var err error
+	Defined, err := ListDefinedSets(ctx, NeighborSetName)
+	if err != nil {
+		return "false", fmt.Errorf("ListDefinedSets happen a err, err is %s", err)
+	}
+	if Defined != nil {
+		return "false", fmt.Errorf("ListDefinedSets happen a err, err is %s", err)
+	}
+	res := newAddDefinedSet(Type, NeighborSetName, nil, list)
+	_, err = Client.AddDefinedSet(ctx, res)
+	if err != nil {
+		return "false", fmt.Errorf("AddDefinedSet happen a err, err is %s", err)
+	}
+	return "Successful", nil
+}
+
+func AddDefinedSetExtCommunitySet(ctx context.Context, ExtCommunitySetName, Type string, list []string) (string, error) {
+	var err error
+	Defined, err := ListDefinedSets(ctx, ExtCommunitySetName)
+	if err != nil {
+		return "false", fmt.Errorf("ListDefinedSets happen a err, err is %s", err)
+	}
+	if Defined != nil {
+		return "false", fmt.Errorf("ListDefinedSets happen a err, err is %s", err)
+	}
+	res := newAddDefinedSet(Type, ExtCommunitySetName, nil, list)
 	_, err = Client.AddDefinedSet(ctx, res)
 	if err != nil {
 		return "false", fmt.Errorf("AddDefinedSet happen a err, err is %s", err)

@@ -24,7 +24,7 @@ func CreatePrefixSet(w http.ResponseWriter, r *http.Request) {
 		//日志
 	}
 
-	reply, err := operation.AddDefinedSets(context.Background(), c.Type, c.PrefixSetName, c.ipPrefix, c.MaskMin, c.MaskMax)
+	reply, err := operation.AddDefinedSetPrefixSet(context.Background(), c.Type, c.PrefixSetName, c.ipPrefix, c.MaskMin, c.MaskMax)
 	if err != nil {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())

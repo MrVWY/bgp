@@ -6,9 +6,9 @@ import (
 )
 
 //Policy
-func newAddPolicyRequest(policyName, StatementsName, PrefixSetName, NeighborSetName string) *gobgpapi.AddPolicyRequest {
+func newAddPolicyRequest(policyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, ExtCommunitySetName, action string) *gobgpapi.AddPolicyRequest {
 	return &gobgpapi.AddPolicyRequest{
-		Policy: newPolicy(policyName, StatementsName, PrefixSetName, NeighborSetName),
+		Policy: newPolicy(policyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, ExtCommunitySetName, action),
 		ReferExistingStatements: false,
 	}
 }
@@ -21,17 +21,17 @@ func newDelPolicyRequest(policy *gobgpapi.Policy) *gobgpapi.DeletePolicyRequest 
 	}
 }
 
-func newPolicy(policyName, StatementsName, PrefixSetName, NeighborSetName string) *gobgpapi.Policy {
+func newPolicy(policyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, ExtCommunitySetName, action string) *gobgpapi.Policy {
 	return &gobgpapi.Policy{
 		Name : policyName,
-		Statements: []*gobgpapi.Statement{ newStatements(StatementsName, PrefixSetName, NeighborSetName) },
+		Statements: []*gobgpapi.Statement{ newStatements(StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, ExtCommunitySetName, action) },
 	}
 }
 
 //DefinedSet
-func newAddDefinedSet(Type string, DFSetName string, prefix []*gobgpapi.Prefix) *gobgpapi.AddDefinedSetRequest {
+func newAddDefinedSet(Type string, DFSetName string, prefix []*gobgpapi.Prefix, list []string) *gobgpapi.AddDefinedSetRequest {
 	return &gobgpapi.AddDefinedSetRequest{
-		DefinedSet: newDefinedSet(Type, DFSetName, prefix),
+		DefinedSet: newDefinedSet(Type, DFSetName, prefix, list),
 	}
 }
 
@@ -41,23 +41,24 @@ func newDelDefinedSet(DefinedSet *gobgpapi.DefinedSet) *gobgpapi.DeleteDefinedSe
 	}
 }
 
-func newDefinedSet(Type string, DFSetName string, prefix []*gobgpapi.Prefix) *gobgpapi.DefinedSet {
+func newDefinedSet(Type string, DFSetName string, prefix []*gobgpapi.Prefix, List []string) *gobgpapi.DefinedSet {
 	var DefinedType gobgpapi.DefinedType
 
 	switch Type {
 		case "PREFIX": DefinedType = gobgpapi.DefinedType_PREFIX
 		case "NEIGHBOR": DefinedType = gobgpapi.DefinedType_NEIGHBOR
-		case "TAG": DefinedType = gobgpapi.DefinedType_TAG
-		case "AS_PATH" : DefinedType = gobgpapi.DefinedType_AS_PATH
 		case "COMMUNITY": DefinedType = gobgpapi.DefinedType_COMMUNITY
 		case "EXT_COMMUNITY" : DefinedType = gobgpapi.DefinedType_EXT_COMMUNITY
+
+		case "TAG": DefinedType = gobgpapi.DefinedType_TAG
+		case "AS_PATH" : DefinedType = gobgpapi.DefinedType_AS_PATH
 		case "LARGE_COMMUNITY": DefinedType = gobgpapi.DefinedType_LARGE_COMMUNITY
 		case "NEXT_HOP" : DefinedType = gobgpapi.DefinedType_NEXT_HOP
 	}
 	return &gobgpapi.DefinedSet{
 		DefinedType: 	DefinedType,
 		Name: 			DFSetName,
-		List:        	nil,
+		List:        	List,
 		Prefixes: 		prefix,
 	}
 }
@@ -72,15 +73,23 @@ func newPrefixSet(ipPrefix, MaskMin, MaskMax string) []*gobgpapi.Prefix {
 }
 
 //Statements
-func newStatements(StatementsName ,PrefixSetName, NeighborSetName string) *gobgpapi.Statement {
+func newStatements(StatementsName ,PrefixSetName, NeighborSetName, CommunitySetName, ExtCommunitySetName, action string) *gobgpapi.Statement {
+	var Action gobgpapi.RouteAction
+	switch action {
+		case "NONE": Action = gobgpapi.RouteAction_NONE
+		case "ACCEPT": Action = gobgpapi.RouteAction_ACCEPT
+		case "REJECT": Action = gobgpapi.RouteAction_REJECT
+	}
 	return &gobgpapi.Statement{
 		Name: StatementsName,
 		Conditions: &gobgpapi.Conditions{
-			PrefixSet: &gobgpapi.MatchSet{MatchType: gobgpapi.MatchType_ANY, Name: PrefixSetName},
-			NeighborSet:       &gobgpapi.MatchSet{MatchType: gobgpapi.MatchType_ANY, Name: NeighborSetName},
+			PrefixSet: newMatchSet(PrefixSetName),
+			NeighborSet:      newMatchSet(NeighborSetName),
+			CommunitySet: newMatchSet(CommunitySetName),
+			ExtCommunitySet: newMatchSet(ExtCommunitySetName),
 		},
 		Actions: &gobgpapi.Actions{
-			RouteAction: gobgpapi.RouteAction_REJECT,
+			RouteAction: Action,
 		},
 	}
 }
@@ -92,10 +101,18 @@ func newDelStatements(Statements *gobgpapi.Statement) *gobgpapi.DeleteStatementR
 	}
 }
 
-func newAddStatementRequest(StatementsName, PrefixSetName, NeighborSetName string) *gobgpapi.AddStatementRequest{
+func newAddStatementRequest(StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, ExtCommunitySetName, action string) *gobgpapi.AddStatementRequest{
 	return &gobgpapi.AddStatementRequest{
-		Statement: newStatements(StatementsName, PrefixSetName, NeighborSetName),
+		Statement: newStatements(StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, ExtCommunitySetName, action),
 	}
+}
+
+//MatchSet
+func newMatchSet(name string)  *gobgpapi.MatchSet {
+	if name == "" {
+		return nil
+	}
+	return &gobgpapi.MatchSet{ MatchType: gobgpapi.MatchType_ANY, Name: name}
 }
 
 //Global
@@ -146,4 +163,8 @@ func newPeerConf(Description, NeighborAddress string, LocalAs, PeerAs, SendCommu
 		SendCommunity:     uint32(SendCommunity),
 		//NeighborInterface: "",
 	}
+}
+
+func newPeerState() {
+
 }

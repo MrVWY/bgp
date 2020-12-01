@@ -17,7 +17,7 @@ func main() {
 	http.HandleFunc("/DeleteStatement", handle.DeleteStatement)
 
 	http.HandleFunc("/CreatePrefixSet", handle.CreatePrefixSet)
-	http.HandleFunc("DeletePrefixSet", handle.DeletePrefixSet)
+	http.HandleFunc("/DeletePrefixSet", handle.DeletePrefixSet)
 
 	http.HandleFunc("/StartBGP", handle.StartBGP)
 	http.HandleFunc("/CreateGlobalPolicy", handle.CreateGlobalPolicy)

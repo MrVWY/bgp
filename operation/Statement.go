@@ -20,7 +20,7 @@ func AddStatementsToPolicy(ctx context.Context, PolicyName, StatementsName strin
 	return "Successful", nil
 }
 
-func AddStatements(ctx context.Context, StatementsName, PrefixSetName, NeighborSetName string) (string, error) {
+func AddStatements(ctx context.Context, StatementsName, PrefixSetName, NeighborSetName, action string) (string, error) {
 	var err error
 	has, err := ListStatements(ctx, StatementsName)
 	if err != nil {
@@ -29,7 +29,7 @@ func AddStatements(ctx context.Context, StatementsName, PrefixSetName, NeighborS
 	if has == nil {
 		return "", errors.New("The Statement is exist ")
 	}
-	_, err = Client.AddStatement(ctx, newAddStatementRequest(StatementsName, PrefixSetName, NeighborSetName))
+	_, err = Client.AddStatement(ctx, newAddStatementRequest(StatementsName, PrefixSetName, NeighborSetName, action))
 	if err != nil {
 		return "false", fmt.Errorf("DeleteStatements happen a err, err is %s", err)
 	}
