@@ -2,11 +2,18 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="d4e1a230-3a65-4258-a376-b15dfdf5bd3a" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server.go" beforeDir="false" afterPath="$PROJECT_DIR$/Server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handle/defined_interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/handle/defined_interface.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handle/json_struct.go" beforeDir="false" afterPath="$PROJECT_DIR$/handle/json_struct.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/handle/peer_interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/handle/peer_interface.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handle/policy_interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/handle/policy_interface.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handle/statement_interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/handle/statement_interface.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/operation/Builder.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Builder.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operation/DefinedSet.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/DefinedSet.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operation/Global.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Global.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operation/Peer.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Peer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operation/Policy.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Policy.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/operation/Statement.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Statement.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -119,5 +126,9 @@
       <screen x="0" y="30" width="1920" height="1050" />
     </state>
     <state x="565" y="169" key="SettingsEditor/0.30.1920.1050@0.30.1920.1050" timestamp="1606370693540" />
+    <state x="698" y="264" width="672" height="678" key="search.everywhere.popup" timestamp="1606894008473">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state x="698" y="264" width="672" height="678" key="search.everywhere.popup/0.30.1920.1050@0.30.1920.1050" timestamp="1606894008473" />
   </component>
 </project>

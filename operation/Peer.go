@@ -52,8 +52,6 @@ func ListPeers(ctx context.Context, address string) (*gobgpapi.Peer, error) {
 	return response.GetPeer(), nil
 }
 
-
-
 //UpdatePeer()
 //ResetPeer()
 //ShutdownPeer()

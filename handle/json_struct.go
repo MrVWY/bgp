@@ -9,19 +9,16 @@ const (
 
 type message struct {
 	code string
-	msg string
+	msg  string
+}
+
+type policy struct {
+	PolicyName string
 }
 
 type createPolicy struct {
-	PolicyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, ExtCommunitySetName, action string
-}
-
-type deletePolicy struct {
-	PolicyName string
-}
-
-type listPolicy struct {
-	PolicyName string
+	PolicyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string
+	Community []string
 }
 
 type addStatementToPolicy struct {
@@ -29,10 +26,11 @@ type addStatementToPolicy struct {
 }
 
 type createStatement struct {
-	StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, ExtCommunitySetName, action string
+	StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string
+	Community []string
 }
 
-type deleteStatement struct {
+type Statements struct {
 	StatementsName string
 }
 
@@ -40,14 +38,24 @@ type createPrefixSet struct {
 	Type, PrefixSetName, ipPrefix, MaskMin, MaskMax string
 }
 
-type deletePrefixSet struct {
-	PrefixSetName string
+type createCommunitySet struct {
+	CommunitySetName, Type string
+	list []string
+}
+
+type createNeighborSet struct {
+	NeighborSetName, Type string
+	list []string
+}
+
+type deleteDefinedSet struct {
+	DefinedSetName string
 }
 
 func Json(code, msg string) ([]byte, error) {
 	message, err := json.Marshal(message{code: code, msg: msg})
 	if err != nil {
-		return nil ,err
+		return nil, err
 	}
 	return message, nil
 }

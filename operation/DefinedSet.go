@@ -63,26 +63,9 @@ func AddDefinedSetNeighborSet(ctx context.Context, NeighborSetName, Type string,
 	return "Successful", nil
 }
 
-func AddDefinedSetExtCommunitySet(ctx context.Context, ExtCommunitySetName, Type string, list []string) (string, error) {
+func DeleteDefinedSets(ctx context.Context, DefinedSetName string) (string, error) {
 	var err error
-	Defined, err := ListDefinedSets(ctx, ExtCommunitySetName)
-	if err != nil {
-		return "false", fmt.Errorf("ListDefinedSets happen a err, err is %s", err)
-	}
-	if Defined != nil {
-		return "false", fmt.Errorf("ListDefinedSets happen a err, err is %s", err)
-	}
-	res := newAddDefinedSet(Type, ExtCommunitySetName, nil, list)
-	_, err = Client.AddDefinedSet(ctx, res)
-	if err != nil {
-		return "false", fmt.Errorf("AddDefinedSet happen a err, err is %s", err)
-	}
-	return "Successful", nil
-}
-
-func DeleteDefinedSets(ctx context.Context, DFSetName string) (string, error) {
-	var err error
-	Defined, err := ListDefinedSets(ctx, DFSetName)
+	Defined, err := ListDefinedSets(ctx, DefinedSetName)
 	if err != nil {
 		return "false", fmt.Errorf("ListDefinedSets happen a err, err is %s", err)
 	}
