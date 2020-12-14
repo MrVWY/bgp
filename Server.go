@@ -2,11 +2,13 @@ package main
 
 import (
 	"bgp/handle"
+	"bgp/logger"
 	"net/http"
 )
 
 func main() {
 	handle.Init("0.0.0.0")
+	logger.InitLogger(logger.Path,logger.Level)
 	//handle.CreatePrefixSet(context.Background(), "PREFIX", "text", "10.1.1.0/24", "24", "32")
 
 	http.HandleFunc("/CreatePolicy", handle.CreatePolicy)

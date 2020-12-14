@@ -22,3 +22,7 @@ func CreatePeer(w http.ResponseWriter, r *http.Request) {
 func DeletePeer(w http.ResponseWriter, r *http.Request) {
 
 }
+
+func ListPeer(w http.ResponseWriter, r *http.Request) {
+
+}

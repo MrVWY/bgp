@@ -1,6 +1,7 @@
 package handle
 
 import (
+	"bgp/logger"
 	"bgp/operation"
 	"encoding/json"
 	"golang.org/x/net/context"
@@ -10,18 +11,19 @@ import (
 func CreateStatement(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type","text/json")
 	var c createStatement
-	if r.Body == nil {
+	var err error
+	if r.Body == nil || r.Method != "POST" {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagOne)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Error("Illegal request")
 	}
-	err := json.NewDecoder(r.Body).Decode(&c)
+	err = json.NewDecoder(r.Body).Decode(&c)
 	if err != nil {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagTwo)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	reply, err := operation.AddStatements(context.Background(), c.StatementsName, c.PrefixSetName, c.NeighborSetName, c.CommunitySetName, c.CommunityAction, c.action, c.Community)
@@ -29,7 +31,7 @@ func CreateStatement(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	w.WriteHeader(200)
@@ -40,18 +42,19 @@ func CreateStatement(w http.ResponseWriter, r *http.Request) {
 func DeleteStatement(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type","text/json")
 	var c Statements
-	if r.Body == nil {
+	var err error
+	if r.Body == nil || r.Method != "POST" {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagOne)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Error("Illegal request")
 	}
-	err := json.NewDecoder(r.Body).Decode(&c)
+	err = json.NewDecoder(r.Body).Decode(&c)
 	if err != nil {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagTwo)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	reply, err := operation.DeleteStatements(context.Background(), c.StatementsName)
@@ -59,7 +62,7 @@ func DeleteStatement(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	w.WriteHeader(200)
@@ -70,18 +73,19 @@ func DeleteStatement(w http.ResponseWriter, r *http.Request) {
 func ListStatement(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type","text/json")
 	var c Statements
-	if r.Body == nil {
+	var err error
+	if r.Body == nil || r.Method != "POST" {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagOne)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Error("Illegal request")
 	}
-	err := json.NewDecoder(r.Body).Decode(&c)
+	err = json.NewDecoder(r.Body).Decode(&c)
 	if err != nil {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagTwo)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	reply, err := operation.ListStatements(context.Background(), c.StatementsName)
@@ -89,13 +93,12 @@ func ListStatement(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 	w.WriteHeader(200)
 	re, err := json.Marshal(reply)
 	if err != nil {
-		//日志
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 	_, _ = w.Write(re)
-	//日志
 }

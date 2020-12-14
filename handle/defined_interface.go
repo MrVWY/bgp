@@ -1,6 +1,7 @@
 package handle
 
 import (
+	"bgp/logger"
 	"bgp/operation"
 	"encoding/json"
 	"golang.org/x/net/context"
@@ -10,18 +11,19 @@ import (
 func CreatePrefixSet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type","text/json")
 	var c createPrefixSet
-	if r.Body == nil {
+	var err error
+	if r.Body == nil || r.Method != "POST" {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagOne)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Error("Illegal request")
 	}
-	err := json.NewDecoder(r.Body).Decode(&c)
+	err = json.NewDecoder(r.Body).Decode(&c)
 	if err != nil {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagTwo)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	reply, err := operation.AddDefinedSetPrefixSet(context.Background(), c.Type, c.PrefixSetName, c.ipPrefix, c.MaskMin, c.MaskMax)
@@ -29,6 +31,7 @@ func CreatePrefixSet(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())
 		_, _ = w.Write(msg)
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	w.WriteHeader(200)
@@ -39,18 +42,19 @@ func CreatePrefixSet(w http.ResponseWriter, r *http.Request) {
 func CreateCommunitySet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type","text/json")
 	var c createCommunitySet
-	if r.Body == nil {
+	var err error
+	if r.Body == nil || r.Method != "POST" {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagOne)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Error("Illegal request")
 	}
-	err := json.NewDecoder(r.Body).Decode(&c)
+	err = json.NewDecoder(r.Body).Decode(&c)
 	if err != nil {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagTwo)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	reply, err := operation.AddDefinedSetCommunitySet(context.Background(), c.CommunitySetName, c.Type, c.list)
@@ -58,6 +62,7 @@ func CreateCommunitySet(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())
 		_, _ = w.Write(msg)
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	w.WriteHeader(200)
@@ -68,18 +73,19 @@ func CreateCommunitySet(w http.ResponseWriter, r *http.Request) {
 func CreateNeighborSet(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type","text/json")
 	var c createNeighborSet
-	if r.Body == nil {
+	var err error
+	if r.Body == nil || r.Method != "POST" {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagOne)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Error("Illegal request")
 	}
-	err := json.NewDecoder(r.Body).Decode(&c)
+	err = json.NewDecoder(r.Body).Decode(&c)
 	if err != nil {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagTwo)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	reply, err := operation.AddDefinedSetNeighborSet(context.Background(), c.NeighborSetName, c.Type, c.list)
@@ -87,6 +93,7 @@ func CreateNeighborSet(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())
 		_, _ = w.Write(msg)
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	w.WriteHeader(200)
@@ -97,18 +104,19 @@ func CreateNeighborSet(w http.ResponseWriter, r *http.Request) {
 func DeleteDefined(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type","text/json")
 	var c deleteDefinedSet
-	if r.Body == nil {
+	var err error
+	if r.Body == nil || r.Method != "POST" {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagOne)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Error("Illegal request")
 	}
-	err := json.NewDecoder(r.Body).Decode(&c)
+	err = json.NewDecoder(r.Body).Decode(&c)
 	if err != nil {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagTwo)
 		_, _ = w.Write(msg)
-		//日志
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	reply, err := operation.DeleteDefinedSets(context.Background(), c.DefinedSetName)
@@ -116,6 +124,7 @@ func DeleteDefined(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())
 		_, _ = w.Write(msg)
+		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
 	w.WriteHeader(200)
