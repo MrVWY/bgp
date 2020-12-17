@@ -52,7 +52,27 @@ func ListPeers(ctx context.Context, address string) (*gobgpapi.Peer, error) {
 	return response.GetPeer(), nil
 }
 
-//UpdatePeer()
+func AddPolicyToPeer(ctx context.Context, address, PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut string) (string, error) {
+	peer, err := ListPeers(ctx, address)
+	if err != nil {
+		return "false", fmt.Errorf("ListPeers is happend a err, err is %s", err)
+	}
+	peer.ApplyPolicy = newApplyPolicy(PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut)
+	ok, err := UpdatePeers(ctx, peer)
+	if err != nil {
+		return "false", fmt.Errorf("UpdatePeer is happend a err, err is %s", err)
+	}
+	return ok, nil
+}
+
+func UpdatePeers(ctx context.Context, peer *gobgpapi.Peer) (string, error) {
+	req := newUpdatePeerRequest(peer, true)
+	_, err := Client.UpdatePeer(ctx, req)
+	if err != nil {
+		return "false", fmt.Errorf("UpdatePeer is happend a err, err is %s", err)
+	}
+	return "Successful", nil
+}
 //ResetPeer()
 //ShutdownPeer()
 //EnablePeer()

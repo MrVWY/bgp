@@ -1,6 +1,7 @@
 package operation
 
 import (
+	"context"
 	gobgpapi "github.com/osrg/gobgp/api"
 	"strconv"
 )
@@ -142,33 +143,30 @@ func newAddPeerRequest(Description, NeighborAddress string, LocalAs, PeerAs, Sen
 	return &gobgpapi.AddPeerRequest{Peer: newPeer(Description, NeighborAddress, LocalAs, PeerAs, SendCommunity)}
 }
 
-func newUpdatePeerRequest(Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity int) *gobgpapi.UpdatePeerRequest {
+func newUpdatePeerRequest(newPeer *gobgpapi.Peer, DoSoftResetIn bool) *gobgpapi.UpdatePeerRequest {
 	return &gobgpapi.UpdatePeerRequest{
-		Peer:          newPeer(Description, NeighborAddress, LocalAs, PeerAs, SendCommunity),
-		DoSoftResetIn: false, //软复位
+		Peer:          newPeer,
+		DoSoftResetIn: DoSoftResetIn, //软复位 可以在不中断BGP连接的情况下使BGP立即应用新的出口策略
 	}
 }
 
 func newPeer(Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity int) *gobgpapi.Peer {
-	//var Reflector *gobgpapi.RouteReflector
-	//if isReflector {
-	//	Reflector = &gobgpapi.RouteReflector{ RouteReflectorClient: true, RouteReflectorClusterId: RouteReflectorClusterId }
-	//}
 	return &gobgpapi.Peer{
-		Conf:           newPeerConf(Description, NeighborAddress, LocalAs, PeerAs, SendCommunity),
-		EbgpMultihop:   &gobgpapi.EbgpMultihop{Enabled: true, MultihopTtl: 100 },
+		ApplyPolicy:  nil,
+		Conf:         newPeerConf(Description, NeighborAddress, LocalAs, PeerAs, SendCommunity),
+		EbgpMultihop: &gobgpapi.EbgpMultihop{Enabled: true, MultihopTtl: 100},
 		//State:          &gobgpapi.PeerState{},
 		//Transport:      newTransport(),
-		RouteReflector: nil,
+		//RouteReflector: nil,
 	}
 }
 
 //prepare to Loopback
 func newTransport(LocalAddress, RemoteAddress string, LocalPort, RemotePort int) *gobgpapi.Transport {
 	return &gobgpapi.Transport{
-		LocalAddress:  LocalAddress,
-		LocalPort:     uint32(LocalPort),
-		MtuDiscovery:  false,  //链路MTU最大值检测
+		LocalAddress: LocalAddress,
+		LocalPort:    uint32(LocalPort),
+		MtuDiscovery: false, //链路MTU最大值检测
 		//neighbor passive
 		//The neighbor passive command sets the TCP connection for the specified BGP neighbor or peer group to passive mode. When the peer’s transport connection mode is set to passive, it accepts TCP connections for BGP but does not initiate them.
 		//The no neighbor passive command sets the specified BGP neighbor or peer group to active connection mode. BGP peers in active mode can both accept and initiate TCP connections for BGP. This is the default behavior.
@@ -185,8 +183,7 @@ func newTransport(LocalAddress, RemoteAddress string, LocalPort, RemotePort int)
 //no-prepend： Do not prepend local-as to updates from ebgp peers
 func newPeerConf(Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity int) *gobgpapi.PeerConf {
 	return &gobgpapi.PeerConf{
-		AuthPassword: nil, //加密连接
-		Description:     Description,
+		Description: Description,
 		//local_as
 		//Take a look at the topology below. If the ISP who owns AS 100 brought the ISP that owns AS 200,
 		//then you’re gonna wanna eventually get R3 using AS 100. However, if on R3, we replace the BGP AS 200 process with 100,
@@ -195,36 +192,72 @@ func newPeerConf(Description, NeighborAddress string, LocalAs, PeerAs, SendCommu
 		//and when a peer is ready to change their config to peer with the new AS, we change R3’s AS number for that peer only.
 		//This means all sessions with the other peers will be maintained because R3 is still peering with everyone else using AS 200. Let’s take a look at an example of how the local-as feature can be used to accomplish this.
 		//LocalAs:         uint32(LocalAs),
-		NeighborAddress: NeighborAddress,
-		PeerAs:          uint32(PeerAs),
-		PeerGroup: nil,
-		SendCommunity:   uint32(SendCommunity),
-		//RemovePrivateAs: nil,	
-		//NeighborInterface: "",
+		NeighborAddress:  NeighborAddress,
+		PeerAs:           uint32(PeerAs),
+		SendCommunity:    uint32(SendCommunity),
 		RouteFlapDamping: false, //路由抖动 reducing the number of update messages sent between BGP peers
-		AllowOwnAs: 1,
-		ReplacePeerAs: true, //前提是出现了secondary AS, 否则默认false
+		AllowOwnAs:       1,
+		ReplacePeerAs:    false, //前提是出现了secondary AS, 否则默认false
 	}
 }
 
 func newPeerSate(Description, NeighborAddress, RouterId string, LocalAs, PeerAs int) *gobgpapi.PeerState {
 	return &gobgpapi.PeerState{
-		Description:      "",
-		LocalAs:          0,
-		Messages:         nil,
-		NeighborAddress:  "",
-		PeerAs:           0,
-		//PeerType:         0,
-		//Queues:           nil,
-		//RemovePrivateAs:  0,
+		Description:      Description,
+		LocalAs:          uint32(LocalAs),
+		NeighborAddress:  NeighborAddress,
+		PeerAs:           uint32(PeerAs),
 		RouteFlapDamping: false,
-		SendCommunity:    0,
-		//SessionState:     0,
-		//AdminState:       0,
-		//OutQ:             0,
-		Flops:            0,
-		//RemoteCap:        nil,
-		//LocalCap:         nil,
-		RouterId:         "",
+		RouterId:         RouterId,
+	}
+}
+
+//ApplyPolicy
+func newApplyPolicy(PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut string) *gobgpapi.ApplyPolicy {
+	if ImOrOut == "Import" {
+		return &gobgpapi.ApplyPolicy{
+			ImportPolicy: newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, PolicyName),
+		}
+	}else if ImOrOut == "Export" {
+		return &gobgpapi.ApplyPolicy{
+			ExportPolicy: newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, PolicyName),
+		}
+	}
+	return nil
+}
+
+func newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, PolicyName string) *gobgpapi.PolicyAssignment {
+	policy, err := ListPolicies(context.Background(), PolicyName)
+	if err != nil {
+		//
+	}
+	Policies := make([]*gobgpapi.Policy, 0)
+	Policies = append(Policies, policy)
+
+	var direction gobgpapi.PolicyDirection
+	switch Direction {
+	case "Import":
+		direction = gobgpapi.PolicyDirection_IMPORT
+	case "Export":
+		direction = gobgpapi.PolicyDirection_EXPORT
+	case "Unknown":
+		direction = gobgpapi.PolicyDirection_UNKNOWN
+	}
+
+	var routeAction gobgpapi.RouteAction
+	switch RouteAction {
+	case "Accept":
+		routeAction = gobgpapi.RouteAction_ACCEPT
+	case "Reject":
+		routeAction = gobgpapi.RouteAction_REJECT
+	case "None":
+		routeAction = gobgpapi.RouteAction_NONE
+	}
+
+	return &gobgpapi.PolicyAssignment{
+		Name:          PolicyAssignmentName,
+		Direction:     direction,
+		Policies:      Policies,
+		DefaultAction: routeAction,
 	}
 }

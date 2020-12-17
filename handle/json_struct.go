@@ -52,6 +52,16 @@ type deleteDefinedSet struct {
 	DefinedSetName string
 }
 
+type peer struct {
+	NeighborAddress string
+	PeerAs int
+}
+
+type newPeer struct {
+	Description, NeighborAddress string
+	LocalAs, PeerAs, SendCommunity int
+}
+
 func Json(code, msg string) ([]byte, error) {
 	message, err := json.Marshal(message{code: code, msg: msg})
 	if err != nil {
