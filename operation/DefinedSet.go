@@ -8,6 +8,38 @@ import (
 	"strconv"
 )
 
+//DefinedSet
+func newAddDefinedSet(Type string, DFSetName string, prefix []*gobgpapi.Prefix, list []string) *gobgpapi.AddDefinedSetRequest {
+	return &gobgpapi.AddDefinedSetRequest{
+		DefinedSet: newDefinedSet(Type, DFSetName, prefix, list),
+	}
+}
+
+func newDelDefinedSet(DefinedSet *gobgpapi.DefinedSet) *gobgpapi.DeleteDefinedSetRequest {
+	return &gobgpapi.DeleteDefinedSetRequest{
+		DefinedSet: DefinedSet,
+	}
+}
+
+func newDefinedSet(Type string, DFSetName string, prefix []*gobgpapi.Prefix, List []string) *gobgpapi.DefinedSet {
+	var DefinedType gobgpapi.DefinedType
+
+	switch Type {
+	case "PREFIX":
+		DefinedType = gobgpapi.DefinedType_PREFIX
+	case "NEIGHBOR":
+		DefinedType = gobgpapi.DefinedType_NEIGHBOR
+	case "COMMUNITY":
+		DefinedType = gobgpapi.DefinedType_COMMUNITY
+	}
+	return &gobgpapi.DefinedSet{
+		DefinedType: DefinedType,
+		Name:        DFSetName,
+		List:        List,
+		Prefixes:    prefix,
+	}
+}
+
 func AddDefinedSetPrefixSet(ctx context.Context,Type, PrefixSetName, ipPrefix, MaskMin, MaskMax string) (string, error) {
 	var err error
 	Defined, err := ListDefinedSets(ctx, PrefixSetName)

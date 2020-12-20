@@ -26,7 +26,7 @@ func CreatePolicy(w http.ResponseWriter, r *http.Request) {
 		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
-	reply, err := operation.AddPolicies(context.Background(), c.PolicyName, c.StatementsName, c.PrefixSetName, c.NeighborSetName, c.CommunitySetName, c.CommunityAction, c.action, c.Community)
+	reply, err := operation.AddPolicies(context.Background(), c.PolicyName, c.StatementsName, c.PrefixSetName, c.NeighborSetName, c.CommunitySetName, c.CommunityAction, c.action, c.Community, c.NextHopAddress)
 	if err != nil {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())

@@ -27,7 +27,7 @@ func AddStatementToPolicy(ctx context.Context, PolicyName, StatementName string)
 	return "Successful", nil
 }
 
-func AddPolicies(ctx context.Context, PolicyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string, Community []string) (string, error) {
+func AddPolicies(ctx context.Context, PolicyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string, Community []string, NextHopAddress string) (string, error) {
 	var err error
 	pas, err := ListPolicies(ctx, PolicyName)
 	if err != nil {
@@ -61,7 +61,7 @@ func AddPolicies(ctx context.Context, PolicyName, StatementsName, PrefixSetName,
 		return "false", errors.New("The NeighborSet is not exist ")
 	}
 
-	newPolicy := newAddPolicyRequest(PolicyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action, Community)
+	newPolicy := newAddPolicyRequest(PolicyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action, Community, NextHopAddress)
 	_, err = Client.AddPolicy(ctx, newPolicy)
 	if err != nil {
 		return "false", fmt.Errorf("AddPolicy happend a err, err is %s", err)

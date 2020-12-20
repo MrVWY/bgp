@@ -7,19 +7,6 @@ import (
 	gobgpapi "github.com/osrg/gobgp/api"
 )
 
-func AddStatementsToPolicy(ctx context.Context, PolicyName, StatementsName string) (string, error) {
-	policy, err := ListPolicies(ctx, PolicyName)
-	if err != nil {
-		return "false", fmt.Errorf("ListPolicies is happend a err, err is %s", err)
-	}
-	Statement, err := ListStatements(ctx, StatementsName)
-	if err != nil {
-		return "false", fmt.Errorf("ListStatements is happend a err, err is %s", err)
-	}
-	policy.Statements = append(policy.Statements, Statement)
-	return "Successful", nil
-}
-
 func AddStatements(ctx context.Context, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string, Community []string) (string, error) {
 	var err error
 	has, err := ListStatements(ctx, StatementsName)

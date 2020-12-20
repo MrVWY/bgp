@@ -3,10 +3,18 @@
   <component name="ChangeListManager">
     <list default="true" id="d4e1a230-3a65-4258-a376-b15dfdf5bd3a" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server.go" beforeDir="false" afterPath="$PROJECT_DIR$/Server.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handle/json_struct.go" beforeDir="false" afterPath="$PROJECT_DIR$/handle/json_struct.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/handle/peer_interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/handle/peer_interface.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/handle/policy_interface.go" beforeDir="false" afterPath="$PROJECT_DIR$/handle/policy_interface.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/operation/Builder.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Builder.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operation/DefinedSet.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/DefinedSet.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operation/Global.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Global.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/operation/Peer.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Peer.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operation/Policy.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Policy.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operation/Prefix.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Prefix.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operation/Statement.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/Statement.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/operation/basic_operation.go" beforeDir="false" afterPath="$PROJECT_DIR$/operation/basic_operation.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

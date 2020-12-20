@@ -27,7 +27,7 @@ func CreatePeer(w http.ResponseWriter, r *http.Request) {
 		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
-	reply, err := operation.AddPeers(context.Background(), c.Description, c.NeighborAddress, c.LocalAs, c.PeerAs, c.SendCommunity)
+	reply, err := operation.AddPeers(context.Background(), c.Description, c.NeighborAddress, c.PeerAs, c.SendCommunity)
 	if err != nil {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())
@@ -71,8 +71,35 @@ func DeletePeer(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(msg)
 }
 
-func UpdatePeer(w http.ResponseWriter, r *http.Request) {
+func AddPolicyToPeer(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type", "text/json")
+	var err error
+	var c policyToPeer
+	if r.Body == nil || r.Method != "POST" {
+		w.WriteHeader(400)
+		msg, _ := Json("400", MessageTagOne)
+		_, _ = w.Write(msg)
+		logger.Logger.Error("Illegal request")
+	}
 
+	err = json.NewDecoder(r.Body).Decode(&c)
+	if err != nil {
+		w.WriteHeader(400)
+		msg, _ := Json("400", MessageTagTwo)
+		_, _ = w.Write(msg)
+		logger.Logger.Errorf("happen a err that is %v", err)
+	}
+
+	reply, err := operation.AddPolicyToPeer(context.Background(), c.NeighborAddress, c.PolicyAssignmentName, c.Direction, c.RouteAction, c.PolicyName, c.ImOrOut)
+	if err != nil {
+		w.WriteHeader(404)
+		msg, _ := Json("404", err.Error())
+		_, _ = w.Write(msg)
+		logger.Logger.Errorf("happen a err that is %v", err)
+	}
+	w.WriteHeader(200)
+	msg, _ := Json("200", reply)
+	_, _ = w.Write(msg)
 }
 
 func ListPeer(w http.ResponseWriter, r *http.Request) {

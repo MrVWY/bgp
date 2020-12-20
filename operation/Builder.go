@@ -1,15 +1,13 @@
 package operation
 
 import (
-	"context"
 	gobgpapi "github.com/osrg/gobgp/api"
-	"strconv"
 )
 
 //Policy
-func newAddPolicyRequest(policyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string, Community []string) *gobgpapi.AddPolicyRequest {
+func newAddPolicyRequest(policyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string, Community []string, NextHopAddress string) *gobgpapi.AddPolicyRequest {
 	return &gobgpapi.AddPolicyRequest{
-		Policy:                  newPolicy(policyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action, Community),
+		Policy:                  newPolicy(policyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action, Community, NextHopAddress),
 		ReferExistingStatements: false,
 	}
 }
@@ -22,75 +20,15 @@ func newDelPolicyRequest(policy *gobgpapi.Policy) *gobgpapi.DeletePolicyRequest 
 	}
 }
 
-func newPolicy(policyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string, Community []string) *gobgpapi.Policy {
+func newPolicy(policyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string, Community []string, NextHopAddress string) *gobgpapi.Policy {
 	return &gobgpapi.Policy{
 		Name:       policyName,
-		Statements: []*gobgpapi.Statement{newStatements(StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action, Community)},
-	}
-}
-
-//DefinedSet
-func newAddDefinedSet(Type string, DFSetName string, prefix []*gobgpapi.Prefix, list []string) *gobgpapi.AddDefinedSetRequest {
-	return &gobgpapi.AddDefinedSetRequest{
-		DefinedSet: newDefinedSet(Type, DFSetName, prefix, list),
-	}
-}
-
-func newDelDefinedSet(DefinedSet *gobgpapi.DefinedSet) *gobgpapi.DeleteDefinedSetRequest {
-	return &gobgpapi.DeleteDefinedSetRequest{
-		DefinedSet: DefinedSet,
-	}
-}
-
-func newDefinedSet(Type string, DFSetName string, prefix []*gobgpapi.Prefix, List []string) *gobgpapi.DefinedSet {
-	var DefinedType gobgpapi.DefinedType
-
-	switch Type {
-	case "PREFIX":
-		DefinedType = gobgpapi.DefinedType_PREFIX
-	case "NEIGHBOR":
-		DefinedType = gobgpapi.DefinedType_NEIGHBOR
-	case "COMMUNITY":
-		DefinedType = gobgpapi.DefinedType_COMMUNITY
-	}
-	return &gobgpapi.DefinedSet{
-		DefinedType: DefinedType,
-		Name:        DFSetName,
-		List:        List,
-		Prefixes:    prefix,
-	}
-}
-
-//PrefixSet
-func newPrefixSet(ipPrefix, MaskMin, MaskMax string) []*gobgpapi.Prefix {
-	max, _ := strconv.ParseUint(MaskMax, 10, 32)
-	min, _ := strconv.ParseUint(MaskMin, 10, 32)
-	return []*gobgpapi.Prefix{
-		{ipPrefix, uint32(min), uint32(max)},
+		Statements: []*gobgpapi.Statement{newStatements(StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action, Community, NextHopAddress)},
 	}
 }
 
 //Statements
-func newStatements(StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string, Community []string) *gobgpapi.Statement {
-	var Action gobgpapi.RouteAction
-	switch action {
-	case "NONE":
-		Action = gobgpapi.RouteAction_NONE
-	case "ACCEPT":
-		Action = gobgpapi.RouteAction_ACCEPT
-	case "REJECT":
-		Action = gobgpapi.RouteAction_REJECT
-	}
-
-	var communityAction gobgpapi.CommunityActionType
-	switch CommunityAction {
-	case "ADD":
-		communityAction = gobgpapi.CommunityActionType_COMMUNITY_ADD
-	case "REMOVE":
-		communityAction = gobgpapi.CommunityActionType_COMMUNITY_REMOVE
-	case "REPLACE":
-		communityAction = gobgpapi.CommunityActionType_COMMUNITY_REPLACE
-	}
+func newStatements(StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string, Community []string, NextHopAddress string) *gobgpapi.Statement {
 	return &gobgpapi.Statement{
 		Name: StatementsName,
 		Conditions: &gobgpapi.Conditions{
@@ -99,9 +37,9 @@ func newStatements(StatementsName, PrefixSetName, NeighborSetName, CommunitySetN
 			CommunitySet: newMatchSet(CommunitySetName),
 		},
 		Actions: &gobgpapi.Actions{
-			RouteAction: Action,
-			Community:   &gobgpapi.CommunityAction{ActionType: communityAction, Communities: Community},
-			Nexthop:     &gobgpapi.NexthopAction{Address: "null", Self: false},
+			RouteAction: selectRouteAction(action),
+			Community:   newCommunityAction(CommunityAction, Community),
+			Nexthop:     newNextHopAction(NextHopAddress),
 		},
 	}
 }
@@ -113,34 +51,15 @@ func newDelStatements(Statements *gobgpapi.Statement) *gobgpapi.DeleteStatementR
 	}
 }
 
-func newAddStatementRequest(StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string, Community []string) *gobgpapi.AddStatementRequest {
+func newAddStatementRequest(StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string, Community []string, NextHopAddress string) *gobgpapi.AddStatementRequest {
 	return &gobgpapi.AddStatementRequest{
-		Statement: newStatements(StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action, Community),
-	}
-}
-
-//MatchSet
-func newMatchSet(name string) *gobgpapi.MatchSet {
-	if name == "" {
-		return nil
-	}
-	return &gobgpapi.MatchSet{MatchType: gobgpapi.MatchType_ANY, Name: name}
-}
-
-//Global
-func newGlobal(As int, RouterID string, ListenPort int, ListenAddresses []string, UseMultiplePaths bool) *gobgpapi.Global {
-	return &gobgpapi.Global{
-		As:               uint32(As),
-		RouterId:         RouterID,
-		ListenPort:       int32(ListenPort),
-		ListenAddresses:  ListenAddresses,
-		UseMultiplePaths: UseMultiplePaths,
+		Statement: newStatements(StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action, Community, NextHopAddress),
 	}
 }
 
 //Peer
-func newAddPeerRequest(Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity int) *gobgpapi.AddPeerRequest {
-	return &gobgpapi.AddPeerRequest{Peer: newPeer(Description, NeighborAddress, LocalAs, PeerAs, SendCommunity)}
+func newAddPeerRequest(Description, NeighborAddress string, PeerAs, SendCommunity int) *gobgpapi.AddPeerRequest {
+	return &gobgpapi.AddPeerRequest{Peer: newPeer(Description, NeighborAddress, PeerAs, SendCommunity)}
 }
 
 func newUpdatePeerRequest(newPeer *gobgpapi.Peer, DoSoftResetIn bool) *gobgpapi.UpdatePeerRequest {
@@ -150,10 +69,10 @@ func newUpdatePeerRequest(newPeer *gobgpapi.Peer, DoSoftResetIn bool) *gobgpapi.
 	}
 }
 
-func newPeer(Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity int) *gobgpapi.Peer {
+func newPeer(Description, NeighborAddress string, PeerAs, SendCommunity int) *gobgpapi.Peer {
 	return &gobgpapi.Peer{
 		ApplyPolicy:  nil,
-		Conf:         newPeerConf(Description, NeighborAddress, LocalAs, PeerAs, SendCommunity),
+		Conf:         newPeerConf(Description, NeighborAddress, PeerAs, SendCommunity),
 		EbgpMultihop: &gobgpapi.EbgpMultihop{Enabled: true, MultihopTtl: 100},
 		//State:          &gobgpapi.PeerState{},
 		//Transport:      newTransport(),
@@ -181,7 +100,7 @@ func newTransport(LocalAddress, RemoteAddress string, LocalPort, RemotePort int)
 
 //http://blog.sina.com.cn/s/blog_5ec3537101019suy.html
 //no-prepend： Do not prepend local-as to updates from ebgp peers
-func newPeerConf(Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity int) *gobgpapi.PeerConf {
+func newPeerConf(Description, NeighborAddress string, PeerAs, SendCommunity int) *gobgpapi.PeerConf {
 	return &gobgpapi.PeerConf{
 		Description: Description,
 		//local_as
@@ -209,55 +128,5 @@ func newPeerSate(Description, NeighborAddress, RouterId string, LocalAs, PeerAs 
 		PeerAs:           uint32(PeerAs),
 		RouteFlapDamping: false,
 		RouterId:         RouterId,
-	}
-}
-
-//ApplyPolicy
-func newApplyPolicy(PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut string) *gobgpapi.ApplyPolicy {
-	if ImOrOut == "Import" {
-		return &gobgpapi.ApplyPolicy{
-			ImportPolicy: newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, PolicyName),
-		}
-	}else if ImOrOut == "Export" {
-		return &gobgpapi.ApplyPolicy{
-			ExportPolicy: newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, PolicyName),
-		}
-	}
-	return nil
-}
-
-func newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, PolicyName string) *gobgpapi.PolicyAssignment {
-	policy, err := ListPolicies(context.Background(), PolicyName)
-	if err != nil {
-		//
-	}
-	Policies := make([]*gobgpapi.Policy, 0)
-	Policies = append(Policies, policy)
-
-	var direction gobgpapi.PolicyDirection
-	switch Direction {
-	case "Import":
-		direction = gobgpapi.PolicyDirection_IMPORT
-	case "Export":
-		direction = gobgpapi.PolicyDirection_EXPORT
-	case "Unknown":
-		direction = gobgpapi.PolicyDirection_UNKNOWN
-	}
-
-	var routeAction gobgpapi.RouteAction
-	switch RouteAction {
-	case "Accept":
-		routeAction = gobgpapi.RouteAction_ACCEPT
-	case "Reject":
-		routeAction = gobgpapi.RouteAction_REJECT
-	case "None":
-		routeAction = gobgpapi.RouteAction_NONE
-	}
-
-	return &gobgpapi.PolicyAssignment{
-		Name:          PolicyAssignmentName,
-		Direction:     direction,
-		Policies:      Policies,
-		DefaultAction: routeAction,
 	}
 }

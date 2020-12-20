@@ -17,8 +17,8 @@ type policy struct {
 }
 
 type createPolicy struct {
-	PolicyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string
-	Community []string
+	PolicyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action, NextHopAddress string
+	Community                                                                                             []string
 }
 
 type addStatementToPolicy struct {
@@ -27,7 +27,7 @@ type addStatementToPolicy struct {
 
 type createStatement struct {
 	StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action string
-	Community []string
+	Community                                                                                 []string
 }
 
 type Statements struct {
@@ -40,12 +40,12 @@ type createPrefixSet struct {
 
 type createCommunitySet struct {
 	CommunitySetName, Type string
-	list []string
+	list                   []string
 }
 
 type createNeighborSet struct {
 	NeighborSetName, Type string
-	list []string
+	list                  []string
 }
 
 type deleteDefinedSet struct {
@@ -54,12 +54,16 @@ type deleteDefinedSet struct {
 
 type peer struct {
 	NeighborAddress string
-	PeerAs int
+	PeerAs          int
 }
 
 type newPeer struct {
 	Description, NeighborAddress string
-	LocalAs, PeerAs, SendCommunity int
+	PeerAs, SendCommunity        int
+}
+
+type policyToPeer struct {
+	NeighborAddress, PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut string
 }
 
 func Json(code, msg string) ([]byte, error) {

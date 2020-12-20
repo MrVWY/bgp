@@ -7,7 +7,7 @@ import (
 	gobgpapi "github.com/osrg/gobgp/api"
 )
 
-func AddPeers(ctx context.Context, Description, NeighborAddress string, LocalAs, PeerAs, SendCommunity int) (string, error) {
+func AddPeers(ctx context.Context, Description, NeighborAddress string, PeerAs, SendCommunity int) (string, error) {
 	var err error
 	has, err := ListPeers(ctx, NeighborAddress)
 	if err != nil {
@@ -16,7 +16,7 @@ func AddPeers(ctx context.Context, Description, NeighborAddress string, LocalAs,
 	if has != nil {
 		return "false", errors.New("The Peer is exist ")
 	}
-	peer := newAddPeerRequest(Description, NeighborAddress, LocalAs, PeerAs, SendCommunity)
+	peer := newAddPeerRequest(Description, NeighborAddress, PeerAs, SendCommunity)
 	_, err = Client.AddPeer(ctx, peer)
 	if err != nil {
 		return "false",  fmt.Errorf("AddPeers is happend a err, err is %s", err)
@@ -52,12 +52,15 @@ func ListPeers(ctx context.Context, address string) (*gobgpapi.Peer, error) {
 	return response.GetPeer(), nil
 }
 
-func AddPolicyToPeer(ctx context.Context, address, PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut string) (string, error) {
-	peer, err := ListPeers(ctx, address)
+func AddPolicyToPeer(ctx context.Context, NeighborAddress, PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut string) (string, error) {
+	peer, err := ListPeers(ctx, NeighborAddress)
 	if err != nil {
 		return "false", fmt.Errorf("ListPeers is happend a err, err is %s", err)
 	}
-	peer.ApplyPolicy = newApplyPolicy(PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut)
+	peer.ApplyPolicy, err = newApplyPolicy(PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut)
+	if err != nil {
+		return "false", fmt.Errorf("newApplyPolicy is happend a err, err is %s", err)
+	}
 	ok, err := UpdatePeers(ctx, peer)
 	if err != nil {
 		return "false", fmt.Errorf("UpdatePeer is happend a err, err is %s", err)
@@ -73,6 +76,7 @@ func UpdatePeers(ctx context.Context, peer *gobgpapi.Peer) (string, error) {
 	}
 	return "Successful", nil
 }
+
 //ResetPeer()
 //ShutdownPeer()
 //EnablePeer()

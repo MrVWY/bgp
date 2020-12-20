@@ -26,6 +26,11 @@ func main() {
 	http.HandleFunc("/CreateNeighborSet", handle.CreateNeighborSet)
 	http.HandleFunc("/DeleteDefined", handle.DeleteDefined)
 
+	http.HandleFunc("/CreatePeer", handle.CreatePeer)
+	http.HandleFunc("/DeletePeer", handle.DeletePeer)
+	http.HandleFunc("/AddPolicyToPeer", handle.AddPolicyToPeer)
+	http.HandleFunc("/ListPeer", handle.ListPeer)
+
 	http.HandleFunc("/StartBGP", handle.StartBGP)
 	http.HandleFunc("/CreateGlobalPolicy", handle.CreateGlobalPolicy)
 

@@ -1,7 +1,6 @@
 package operation
 
 import (
-
 	gobgpapi "github.com/osrg/gobgp/api"
 	"golang.org/x/net/context"
 	"log"
