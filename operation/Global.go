@@ -16,18 +16,19 @@ func newGlobal(As int, RouterID string, ListenPort int, ListenAddresses []string
 	}
 }
 
-func EditGlobalParameter(ctx context.Context, policyName, InOrOut, action string) (string, error) {
+func EditGlobalParameter(ctx context.Context, importPolicyName, exportPolicy, InOrOut, action string) (string, error) {
 	Global := GetBgp(ctx)
-	Global.ApplyPolicy.ImportPolicy.Name = policyName
-	Global.ApplyPolicy.ImportPolicy.DefaultAction = gobgpapi.RouteAction_REJECT
-
 	if InOrOut == "Import" {
-
+		Global.ApplyPolicy.ImportPolicy.Name = importPolicyName
+		Global.ApplyPolicy.ImportPolicy.DefaultAction = selectRouteAction(action)
 	}else if InOrOut == "Export" {
-
+		Global.ApplyPolicy.ExportPolicy.Name = exportPolicy
+		Global.ApplyPolicy.ExportPolicy.DefaultAction = selectRouteAction(action)
 	}else if InOrOut == "ImportAndExport" {
-
+		Global.ApplyPolicy.ImportPolicy.Name = importPolicyName
+		Global.ApplyPolicy.ImportPolicy.DefaultAction = selectRouteAction(action)
+		Global.ApplyPolicy.ExportPolicy.Name = exportPolicy
+		Global.ApplyPolicy.ExportPolicy.DefaultAction = selectRouteAction(action)
 	}
-
 	return "Successful", nil
 }

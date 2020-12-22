@@ -7,9 +7,9 @@ import (
 )
 
 //ApplyPolicy
-func newApplyPolicy(PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut string) (*gobgpapi.ApplyPolicy, error) {
+func newApplyPolicy(PolicyAssignmentName, Direction, RouteAction, importPolicyName, exportPolicy, ImOrOut string) (*gobgpapi.ApplyPolicy, error) {
 	if ImOrOut == "Import" {
-		Import, err := newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, PolicyName)
+		Import, err := newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, importPolicyName)
 		if err != nil {
 			return nil, err
 		}
@@ -17,21 +17,25 @@ func newApplyPolicy(PolicyAssignmentName, Direction, RouteAction, PolicyName, Im
 			ImportPolicy: Import,
 		}, nil
 	}else if ImOrOut == "Export" {
-		Export, err := newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, PolicyName)
+		ExportPolicy, err := newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, exportPolicy)
 		if err != nil {
 			return nil, err
 		}
 		return &gobgpapi.ApplyPolicy{
-			ExportPolicy: Export,
+			ExportPolicy: ExportPolicy,
 		}, nil
 	}else if ImOrOut == "ImportAndExport" {
-		ImportAndExport, err := newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, PolicyName)
+		ImportAndExport, err := newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, importPolicyName)
+		if err != nil {
+			return nil, err
+		}
+		ExportPolicy, err := newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, exportPolicy)
 		if err != nil {
 			return nil, err
 		}
 		return &gobgpapi.ApplyPolicy{
 			ImportPolicy: ImportAndExport,
-			ExportPolicy: ImportAndExport,
+			ExportPolicy: ExportPolicy,
 		}, nil
 	}
 	return nil, fmt.Errorf("")
@@ -55,20 +59,10 @@ func newPolicyAssignment(PolicyAssignmentName, Direction, RouteAction, PolicyNam
 		direction = gobgpapi.PolicyDirection_UNKNOWN
 	}
 
-	var routeAction gobgpapi.RouteAction
-	switch RouteAction {
-	case "Accept":
-		routeAction = gobgpapi.RouteAction_ACCEPT
-	case "Reject":
-		routeAction = gobgpapi.RouteAction_REJECT
-	case "None":
-		routeAction = gobgpapi.RouteAction_NONE
-	}
-
 	return &gobgpapi.PolicyAssignment{
 		Name:          PolicyAssignmentName,
 		Direction:     direction,
 		Policies:      Policies,
-		DefaultAction: routeAction,
+		DefaultAction: selectRouteAction(RouteAction),
 	}, nil
 }
