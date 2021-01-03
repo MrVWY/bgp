@@ -9,7 +9,9 @@ import (
 )
 
 func CreatePrefixSet(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var c createPrefixSet
 	var err error
 	if r.Body == nil || r.Method != "POST" {
@@ -40,7 +42,9 @@ func CreatePrefixSet(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateCommunitySet(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var c createCommunitySet
 	var err error
 	if r.Body == nil || r.Method != "POST" {
@@ -71,7 +75,9 @@ func CreateCommunitySet(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateNeighborSet(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var c createNeighborSet
 	var err error
 	if r.Body == nil || r.Method != "POST" {
@@ -102,7 +108,9 @@ func CreateNeighborSet(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteDefined(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var c deleteDefinedSet
 	var err error
 	if r.Body == nil || r.Method != "POST" {

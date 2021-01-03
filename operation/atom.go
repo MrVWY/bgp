@@ -28,12 +28,12 @@ func newCommunityAction(CommunityAction string, Community []string) *gobgpapi.Co
 	return &gobgpapi.CommunityAction{ActionType:  communityAction, Communities: Community}
 }
 
-//NextHopAction
+//NextHopAction  注意EBGP IBGP nexthop
 func newNextHopAction(NextHopAddress string) *gobgpapi.NexthopAction {
 	if NextHopAddress == "" {
 		return nil
 	}
-	return &gobgpapi.NexthopAction{ Address: NextHopAddress, Self: false }
+	return &gobgpapi.NexthopAction{ Address: NextHopAddress, Self: true }
 }
 
 //selectRouteAction

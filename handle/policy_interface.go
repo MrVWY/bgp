@@ -9,7 +9,9 @@ import (
 )
 
 func CreatePolicy(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var err error
 	var c createPolicy
 	if r.Body == nil || r.Method != "POST" {
@@ -39,7 +41,9 @@ func CreatePolicy(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeletePolicy(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var c policy
 	var err error
 	if r.Body == nil || r.Method != "POST" {
@@ -69,7 +73,9 @@ func DeletePolicy(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddStatementToPolicy(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var c addStatementToPolicy
 	if r.Body == nil || r.Method != "POST" {
 		w.WriteHeader(400)
@@ -98,8 +104,10 @@ func AddStatementToPolicy(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddPolicyToGlobal(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
-	var c policy
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
+	var c Global
 	if r.Body == nil || r.Method != "POST" {
 		w.WriteHeader(400)
 		msg, _ := Json("400", MessageTagOne)
@@ -114,7 +122,7 @@ func AddPolicyToGlobal(w http.ResponseWriter, r *http.Request) {
 		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
-	reply, err := operation.EditGlobalParameter(context.Background(), c.PolicyName)
+	reply, err := operation.EditGlobalParameter(context.Background(), c.importPolicyName, c.exportPolicy, c.InOrOut, c.action)
 	if err != nil {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())
@@ -127,7 +135,9 @@ func AddPolicyToGlobal(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListPolicy(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var c policy
 	if r.Body == nil || r.Method != "POST" {
 		w.WriteHeader(400)

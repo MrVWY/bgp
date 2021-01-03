@@ -9,7 +9,9 @@ import (
 )
 
 func CreateStatement(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var c createStatement
 	var err error
 	if r.Body == nil || r.Method != "POST" {
@@ -40,7 +42,9 @@ func CreateStatement(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeleteStatement(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var c Statements
 	var err error
 	if r.Body == nil || r.Method != "POST" {
@@ -71,7 +75,9 @@ func DeleteStatement(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListStatement(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var c Statements
 	var err error
 	if r.Body == nil || r.Method != "POST" {

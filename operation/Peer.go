@@ -52,12 +52,12 @@ func ListPeers(ctx context.Context, address string) (*gobgpapi.Peer, error) {
 	return response.GetPeer(), nil
 }
 
-func AddPolicyToPeer(ctx context.Context, NeighborAddress, PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut string) (string, error) {
+func AddPolicyToPeer(ctx context.Context, NeighborAddress, PolicyAssignmentName, Direction, RouteAction, importPolicyName, exportPolicy, ImOrOut string) (string, error) {
 	peer, err := ListPeers(ctx, NeighborAddress)
 	if err != nil {
 		return "false", fmt.Errorf("ListPeers is happend a err, err is %s", err)
 	}
-	peer.ApplyPolicy, err = newApplyPolicy(PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut)
+	peer.ApplyPolicy, err = newApplyPolicy(PolicyAssignmentName, Direction, RouteAction, importPolicyName, exportPolicy, ImOrOut)
 	if err != nil {
 		return "false", fmt.Errorf("newApplyPolicy is happend a err, err is %s", err)
 	}

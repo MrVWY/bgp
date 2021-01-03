@@ -3,7 +3,7 @@
 
 # 问题peer 10.15.0.1 doesn't have per peer policy ->  Set " route-server-client = true "  
 
-### 接口  (22个) 后期只限 post method 
+### 接口  (22个)
 + basic class
     + StartBGP()  
     
@@ -22,21 +22,19 @@
            CommunitySetName: 团体属性列表名称  
            CommunityAction: 团体属性的动作  
            Community: 设置团体属性
-           action: 路由动作  
-        }  
-    
+           Action: 路由动作  
+           NextHop: 下一跳  
+        }
     + DeletePolicy() ✔
         + json parameter:  
         {  
           PolicyName: 策略名  
-        }  
-        
+        }
     + ListPolicy() ✔
         + json parameter:  
         {  
           PolicyName: 策略名  
-        }  
-        
+        }
     + AddStatementToPolicy() ✔  
         + json parameter:  
         {  
@@ -45,10 +43,26 @@
         }  
 
 + Peer class
-    + CreatePeer()  
-    + DeletePeer()
-    + ListPeer()
-    + UpdatePeer()
+    + CreatePeer()✔  
+      + json parameter:  
+      {  
+ 
+      }
+    + DeletePeer()✔  
+      + json parameter:  
+      {  
+
+      }
+    + ListPeer()✔  
+      + json parameter:  
+      {  
+  
+      }
+    + UpdatePeer()✔  
+      + json parameter:  
+      {  
+ 
+      }
     + ResetPeer()
     + ShutdownPeer()
     + EnablePeer()
@@ -92,9 +106,7 @@
         {  
             StatementsName: 策略内容名称  
             PrefixSetName: 路由前缀列表名称  
-            NeighborSetName: 对等体列表名称  
-            PrefixSetName: 路由前缀列表名称  
-            NeighborSetName: 对等体列表名称  
+            NeighborSetName: 对等体列表名称
             CommunitySetName: 团体属性列表名称  
             CommunityAction: 团体属性的动作  
             Community: 设置团体属性

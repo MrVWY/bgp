@@ -9,7 +9,9 @@ import (
 )
 
 func CreatePeer(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var err error
 	var c newPeer
 	if r.Body == nil || r.Method != "POST" {
@@ -41,7 +43,9 @@ func CreatePeer(w http.ResponseWriter, r *http.Request) {
 
 
 func DeletePeer(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var err error
 	var c peer
 	if r.Body == nil || r.Method != "POST" {
@@ -72,7 +76,9 @@ func DeletePeer(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddPolicyToPeer(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type", "text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var err error
 	var c policyToPeer
 	if r.Body == nil || r.Method != "POST" {
@@ -90,7 +96,7 @@ func AddPolicyToPeer(w http.ResponseWriter, r *http.Request) {
 		logger.Logger.Errorf("happen a err that is %v", err)
 	}
 
-	reply, err := operation.AddPolicyToPeer(context.Background(), c.NeighborAddress, c.PolicyAssignmentName, c.Direction, c.RouteAction, c.PolicyName, c.ImOrOut)
+	reply, err := operation.AddPolicyToPeer(context.Background(), c.NeighborAddress, c.PolicyAssignmentName, c.Direction, c.RouteAction, c.importPolicyName, c.exportPolicy, c.ImOrOut)
 	if err != nil {
 		w.WriteHeader(404)
 		msg, _ := Json("404", err.Error())
@@ -103,7 +109,9 @@ func AddPolicyToPeer(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListPeer(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("content-type","text/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("content-type", "application/json")
 	var c peer
 	if r.Body == nil || r.Method != "POST" {
 		w.WriteHeader(400)

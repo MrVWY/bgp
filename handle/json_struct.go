@@ -16,6 +16,10 @@ type policy struct {
 	PolicyName string
 }
 
+type Global struct {
+	importPolicyName, exportPolicy, InOrOut, action string
+}
+
 type createPolicy struct {
 	PolicyName, StatementsName, PrefixSetName, NeighborSetName, CommunitySetName, CommunityAction, action, NextHopAddress string
 	Community                                                                                             []string
@@ -63,7 +67,7 @@ type newPeer struct {
 }
 
 type policyToPeer struct {
-	NeighborAddress, PolicyAssignmentName, Direction, RouteAction, PolicyName, ImOrOut string
+	NeighborAddress, PolicyAssignmentName, Direction, RouteAction, importPolicyName, exportPolicy, ImOrOut string
 }
 
 func Json(code, msg string) ([]byte, error) {
